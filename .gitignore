@@ -1,0 +1,7 @@
+# generated test data (regenerate with ./gen) and build outputs
+data/
+out/
+gen
+bench
+*.o
+err.txt
