@@ -16,12 +16,12 @@ against two `parquet::arrow` baselines over a simulated GCS link.
 
     brew install apache-arrow pkgconf
     make
-    mkdir -p data && ./gen --out=data/snappy.parquet --codec=snappy
+    make data          # regenerates all benchmark inputs, byte-identical
+    make check-data    # verifies them against SHA256SUMS
     ./bench --mode=transcode --file=data/snappy.parquet --budget-mb=256
     ./run_bench.sh results.jsonl && python3 summarize.py results.jsonl
 
     # many files: (file, row group) work queue across the directory
-    for i in $(seq 1 16); do ./gen --out=data/dir/part-$(printf %02d $i).parquet --rows=1000 --rg-rows=400 --seed=$i; done
     ./bench --mode=transcode --dir=data/dir --workers=16 --budget-mb=1024 --inflight=8 --io-threads=64 --upload-threads=32
     ./run_dir.sh results_dir.jsonl && python3 summarize_dir.py results_dir.jsonl   # -> RESULTS_DIR.md
 

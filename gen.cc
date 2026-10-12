@@ -27,6 +27,7 @@ arrow::Status Run(int argc, char** argv) {
   int64_t min_kb = std::stoll(Arg(argc, argv, "min-kb", "50"));
   int64_t max_kb = std::stoll(Arg(argc, argv, "max-kb", "450"));
   uint64_t seed = std::stoull(Arg(argc, argv, "seed", "42"));
+  int64_t id_base = std::stoll(Arg(argc, argv, "id-base", "0"));  // keeps ids unique across files
 
   auto codec = codec_name == "zstd"   ? arrow::Compression::ZSTD
                : codec_name == "none" ? arrow::Compression::UNCOMPRESSED
@@ -62,7 +63,7 @@ arrow::Status Run(int argc, char** argv) {
     arrow::BinaryBuilder img_b;
     arrow::Int32Builder w_b, h_b;
     for (int64_t i = 0; i < n; ++i) {
-      int64_t id = (int64_t)seed * 1000000 + start + i;
+      int64_t id = id_base + start + i;
       ARROW_RETURN_NOT_OK(id_b.Append(id));
       ARROW_RETURN_NOT_OK(label_b.Append("class_" + std::to_string(id % 37)));
       if (id % 97 == 13) {  // ~1% null images
